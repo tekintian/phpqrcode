@@ -4,12 +4,15 @@ php生成带LOGO的二维码图片, 支持自定义LOGO，自定义输出目录�
 
 支持二维码直接返回符合 RFC 2045规范 的 base64, b64 二维码, 首创方法！
 
+支持PHP版本： 5.x -- 7.4, 推荐php7中使用
 
 ## 使用方法
 
 ~~~shell
 # 切换至项目根目录后执行以下命令安装本工具
-composer require "tekintian/phpqrcode"
+
+composer require tekintian/phpqrcode
+
 ~~~
 
 
