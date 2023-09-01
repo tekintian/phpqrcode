@@ -2918,14 +2918,15 @@ class QRrawcode {
 		$ret = 0;
 		if ($this->count < $this->dataLength) {
 			$row = $this->count % $this->blocks;
-			$col = $this->count / $this->blocks;
+			// 这里除法有可能会是小数，使用floor向下取整，避免php8.2 float to int转换精度丢失异常
+			$col = floor($this->count / $this->blocks);
 			if ($col >= $this->rsblocks[0]->dataLength) {
 				$row += $this->b1;
 			}
 			$ret = $this->rsblocks[$row]->data[$col];
 		} else if ($this->count < $this->dataLength + $this->eccLength) {
 			$row = ($this->count - $this->dataLength) % $this->blocks;
-			$col = ($this->count - $this->dataLength) / $this->blocks;
+			$col = floor(($this->count - $this->dataLength) / $this->blocks);
 			$ret = $this->rsblocks[$row]->ecc[$col];
 		} else {
 			return 0;
