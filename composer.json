@@ -1,7 +1,7 @@
 {
     "name": "tekintian/phpqrcode",
     "author": [{"name":"tekintian"},{"url":"http://dev.tekin.cn"}],
-    "description": "PHP qrcode 二维码工具类 改进版本，支持自定义LOGO，自定义输出目录和自定义返回类型 图片，base64图片数据, 二维码图片自定义，静态方法调用，方便快捷，高效，简洁的PHP二维码生成工具",
+    "description": "支持PHP5.3至php8.2的 qrcode 二维码工具类 改进版本，支持自定义LOGO，自定义输出目录和自定义返回类型 图片，base64图片数据, 二维码图片自定义，静态方法调用，方便快捷，高效，简洁的PHP二维码生成工具",
     "type": "library",
     "keywords": ["phpqrcode","qrcode","tiny qrcode","二维码工具","php qrcode with logo", "PHP二维码"],
     "homepage": "https://github.com/tekintian/phpqrcode",
@@ -10,7 +10,7 @@
         "forum": "https://github.com/tekintian/phpqrcode",
         "source": "https://github.com/tekintian/phpqrcode"
     },
-    "version":"1.0",
+    "version":"1.0.1",
     "require": {
         "php": "^5.3|^7.0|^8.0"
     },
