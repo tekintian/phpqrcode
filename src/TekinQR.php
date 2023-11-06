@@ -8,19 +8,19 @@ include_once __DIR__ . '/QRcode.php';
  * 字符串生成二维码工具类，支持自定义LOGO， 自定义输出目录和自定义返回类型
  * @Author: Tekin
  * @Date:   2020-06-05 19:58:19
- * @Last Modified 2020-06-05
+ * @Last Modified 2023-11-06
  */
 class TekinQR {
 	/**
 	 * 将字符串生成二维码图片
-	 * @param  String      $str      [description]
+	 * @param  string      $str      [description]
 	 * @param  int|integer $size     [description]
-	 * @param  String|null $logo     [二维码LOGO图片，可以是本地图片，或者网络图片]
-	 * @param  int|integer $ret_type [二维码返回类型 默认 0 返回图片流； 1 返回base64字符串； 2 写入文件路，必须提供$out_file ]
-	 * @param  String|null $out_file [需要写入的二维码图片路径，必须提供完整的图片路径， 如  /var/www/static/qr/01.png ]
+	 * @param  string|null $logo     [二维码LOGO图片，可以是本地图片，或者网络图片]
+	 * @param  int|integer $ret_type [二维码返回类型 默认 0 直接输出图片到浏览器； 1 返回base64字符串； 2 写入文件路，必须提供$out_file ]; 3 返回二进制图片数据
+	 * @param  string|null $out_file [需要写入的二维码图片路径，必须提供完整的图片路径， 如  /var/www/static/qr/01.png ]
 	 * @return [type]                [description]
 	 */
-	public static function getQRImg(String $str, int $size = 10, String $logo = null, int $ret_type = 0, String $out_file = null) {
+	public static function getQRImg(string $str, int $size = 10, string $logo = null, int $ret_type = 0, string $out_file = null) {
 		//如果logo非网络图片地址，则增加默认路径
 		if ($logo && false === strpos($logo, 'http')) {
 			// 如果logo图片不存在，则重置为null
@@ -65,10 +65,13 @@ class TekinQR {
 
 		$ret_qr = null; // 返回的QR定义
 		// 定义一个临时文件
-		$_tmp_dir = $_SERVER['TMPDIR'] ?? $_SERVER['TEMP']; //临时文件目录
-		$_tmp_qr_file = $_tmp_dir . time() . rand() . '.png';
+		$_tmp_qr_file = tempnam(sys_get_temp_dir(), 'qr');
 		// 根据不同返回类型做相应的处理，默认返回图片流
 		switch ($ret_type) {
+		case 0: // 直接输出图片到浏览器
+			header('Content-type: image/png');
+			imagepng($qrcode); // 向浏览器输出图片
+			break;
 		case 1: // 返回base64数据流
 			imagepng($qrcode, $_tmp_qr_file); // 先写入图片到临时文件夹，然后在使用 file_get_contents 读出后转换为base64
 			// 先写入图片到临时文件夹，然后在使用 file_get_contents 读出后转换为base64
@@ -86,6 +89,12 @@ class TekinQR {
 				$ret_qr = 'data:png;base64,' . chunk_split(base64_encode(file_get_contents($_tmp_qr_file)));
 				unlink($_tmp_qr_file); // 删除临时文件
 			}
+			break;
+		case 3: // 返回二进制图片数据
+			imagepng($qrcode, $_tmp_qr_file); // 先写入图片到临时文件夹，然后在使用 file_get_contents 读出后返回二进制数据
+			// 先写入图片到临时文件夹，然后在使用 file_get_contents 读出后转换为base64
+			$ret_qr = file_get_contents($_tmp_qr_file);
+			unlink($_tmp_qr_file); // 删除临时文件
 			break;
 		default:
 			header('Content-type: image/png');
