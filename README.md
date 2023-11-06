@@ -4,7 +4,7 @@ php生成带LOGO的二维码图片, 支持自定义LOGO，自定义输出目录�
 
 支持二维码直接返回符合 RFC 2045规范 的 base64, b64 二维码, 首创方法！
 
-支持PHP版本： 5.x -- 7.4, 推荐php7中使用
+支持PHP版本： 5.x -- 8.2, 推荐php8中使用
 
 ## 使用方法
 
@@ -37,6 +37,14 @@ echo $qr;
 // $qr =\tekintian\TekinQR::getQRImg($str, 10, "http://tekin.cn/logo.png", 2, "/var/www/static/qr/123.png");
 
 // getQRImg(String $str, int $size = 10, String $logo = null, int $ret_type = 0, String $out_file = null)
+
+// 生成二维码并返回二进制二维码图片数据
+$img_data = \tekintian\TekinQR::getQRImg($qr_str, 10, null, 3);
+// laravel 写入图片数据
+// Storage::disk('local')->put('myqrfile.png', $img_data);
+// 将二进制图片数据写入到文件
+file_put_contents('myqrfile.png', $img_data);
+
 ~~~
 
 ## phpqrcode原生工具类使用方法
@@ -54,9 +62,4 @@ require_once __DIR__ . '/vendor/autoload.php';
 ~~~
 
 更多用法，请参考官方文档 http://phpqrcode.sourceforge.net/
-
-
-
-
-
 
