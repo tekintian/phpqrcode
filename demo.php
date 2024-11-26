@@ -14,18 +14,18 @@ $str = "http://dev.tekin.cn";
 // \tekintian\TekinQR::getQRImg($str);
 
 // 返回base64图片数据
-$qr = \tekintian\TekinQR::getQRImg($str, 10, null, 1);
-echo $qr;
+// $qr = \tekintian\TekinQR::getQRImg($str, 10, '', 1);
+// echo $qr;
 
 // 生成带loog的二维码并直接输出到浏览器
-// $qr = \tekintian\TekinQR::getQRImg($str, 10, "http://tekin.cn/logo.png", 0);
+$qr = \tekintian\TekinQR::getQRImg($str, 10, "http://tekin.cn/logo.png", 0);
 
 // 生成二维码并写入到  /var/www/static/qr/123.png
 // $qr =\tekintian\TekinQR::getQRImg($str, 10, "http://tekin.cn/logo.png", 2, "/var/www/static/qr/123.png");
 
 // 生成二维码并返回二进制二维码图片数据
-$img_data = \tekintian\TekinQR::getQRImg($qr_str, 10, null, 3);
+// $img_data = \tekintian\TekinQR::getQRImg($str, 10, '', 3);
 // laravel 写入图片数据
 // Storage::disk('local')->put('myqrfile.png', $img_data);
 // 将二进制图片数据写入到文件
-file_put_contents('myqrfile.png', $img_data);
+// file_put_contents('myqrfile.png', $img_data);

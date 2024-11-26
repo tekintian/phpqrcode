@@ -139,6 +139,8 @@ define('QR_PNG_MAXIMUM_SIZE', 1024); // maximum allowed png image width (in pixe
 
 class QRtools {
 
+	private $frames=[];
+
 	//----------------------------------------------------------------------
 	public static function binarize($frame) {
 		$len = count($frame);
@@ -1029,7 +1031,7 @@ class QRinputItem {
 		}
 
 		if (!QRinput::check($mode, $size, $setData)) {
-			throw new Exception('Error m:' . $mode . ',s:' . $size . ',d:' . join(',', $setData));
+			throw new \Exception('Error m:' . $mode . ',s:' . $size . ',d:' . join(',', $setData));
 			return null;
 		}
 
@@ -1068,7 +1070,7 @@ class QRinputItem {
 
 			$this->bstream = $bs;
 			return 0;
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return -1;
 		}
 	}
@@ -1096,7 +1098,7 @@ class QRinputItem {
 
 			$this->bstream = $bs;
 			return 0;
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return -1;
 		}
 	}
@@ -1115,7 +1117,7 @@ class QRinputItem {
 
 			$this->bstream = $bs;
 			return 0;
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return -1;
 		}
 	}
@@ -1124,7 +1126,7 @@ class QRinputItem {
 	public function encodeModeKanji($version) {
 		try {
 
-			$bs = new QRbitrtream();
+			$bs = new QRbitstream();
 
 			$bs->appendNum(4, 0x8);
 			$bs->appendNum(QRspec::lengthIndicator(QR_MODE_KANJI, $version), (int) ($this->size / 2));
@@ -1145,7 +1147,7 @@ class QRinputItem {
 
 			$this->bstream = $bs;
 			return 0;
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return -1;
 		}
 	}
@@ -1162,7 +1164,7 @@ class QRinputItem {
 
 			$this->bstream = $bs;
 			return 0;
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return -1;
 		}
 	}
@@ -1246,7 +1248,7 @@ class QRinputItem {
 			}
 
 			return $this->bstream->size();
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return -1;
 		}
 	}
@@ -1266,7 +1268,7 @@ class QRinput {
 	//----------------------------------------------------------------------
 	public function __construct($version = 0, $level = QR_ECLEVEL_L) {
 		if ($version < 0 || $version > QRSPEC_VERSION_MAX || $level > QR_ECLEVEL_H) {
-			throw new Exception('Invalid version no');
+			throw new \Exception('Invalid version no');
 			return NULL;
 		}
 
@@ -1282,7 +1284,7 @@ class QRinput {
 	//----------------------------------------------------------------------
 	public function setVersion($version) {
 		if ($version < 0 || $version > QRSPEC_VERSION_MAX) {
-			throw new Exception('Invalid version no');
+			throw new \Exception('Invalid version no');
 			return -1;
 		}
 
@@ -1299,7 +1301,7 @@ class QRinput {
 	//----------------------------------------------------------------------
 	public function setErrorCorrectionLevel($level) {
 		if ($level > QR_ECLEVEL_H) {
-			throw new Exception('Invalid ECLEVEL');
+			throw new \Exception('Invalid ECLEVEL');
 			return -1;
 		}
 
@@ -1319,7 +1321,7 @@ class QRinput {
 			$entry = new QRinputItem($mode, $size, $data);
 			$this->items[] = $entry;
 			return 0;
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return -1;
 		}
 	}
@@ -1328,20 +1330,20 @@ class QRinput {
 
 	public function insertStructuredAppendHeader($size, $index, $parity) {
 		if ($size > MAX_STRUCTURED_SYMBOLS) {
-			throw new Exception('insertStructuredAppendHeader wrong size');
+			throw new \Exception('insertStructuredAppendHeader wrong size');
 		}
 
 		if ($index <= 0 || $index > MAX_STRUCTURED_SYMBOLS) {
-			throw new Exception('insertStructuredAppendHeader wrong index');
+			throw new \Exception('insertStructuredAppendHeader wrong index');
 		}
 
 		$buf = array($size, $index, $parity);
 
 		try {
-			$entry = new QRinputItem(QR_MODE_STRUCTURE, 3, buf);
+			$entry = new QRinputItem(QR_MODE_STRUCTURE, 3, $buf);
 			array_unshift($this->items, $entry);
 			return 0;
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return -1;
 		}
 	}
@@ -1437,7 +1439,7 @@ class QRinput {
 	}
 
 	//----------------------------------------------------------------------
-	public function estimateBitsModeKanji($size) {
+	public static function estimateBitsModeKanji($size) {
 		return (int) (($size / 2) * 13);
 	}
 
@@ -1594,7 +1596,7 @@ class QRinput {
 
 			$ver = QRspec::getMinimumVersion((int) (($bits + 7) / 8), $this->level);
 			if ($ver < 0) {
-				throw new Exception('WRONG VERSION');
+				throw new \Exception('WRONG VERSION');
 				return -1;
 			} else if ($ver > $this->getVersion()) {
 				$this->setVersion($ver);
@@ -2060,7 +2062,7 @@ class QRsplit {
 			return -1;
 		}
 
-		return $run;
+		return $ret;
 	}
 
 	//----------------------------------------------------------------------
@@ -2131,7 +2133,7 @@ class QRsplit {
 			case QR_MODE_AN: $length = $this->eatAn();
 				break;
 			case QR_MODE_KANJI:
-				if ($hint == QR_MODE_KANJI) {
+				if ($mode == QR_MODE_KANJI) {
 					$length = $this->eatKanji();
 				} else {
 					$length = $this->eat8();
@@ -2177,7 +2179,7 @@ class QRsplit {
 	//----------------------------------------------------------------------
 	public static function splitStringToQRinput($string, QRinput $input, $modeHint, $casesensitive = true) {
 		if (is_null($string) || $string == '\0' || $string == '') {
-			throw new Exception('empty string!!!');
+			throw new \Exception('empty string!!!');
 		}
 
 		$split = new QRsplit($string, $input, $modeHint);
@@ -2847,7 +2849,7 @@ class QRrawcode {
 
 		$this->datacode = $input->getByteStream();
 		if (is_null($this->datacode)) {
-			throw new Exception('null imput string');
+			throw new \Exception('null imput string');
 		}
 
 		QRspec::getEccSpec($input->getVersion(), $input->getErrorCorrectionLevel(), $spec);
@@ -2861,7 +2863,7 @@ class QRrawcode {
 
 		$ret = $this->init($spec);
 		if ($ret < 0) {
-			throw new Exception('block alloc error');
+			throw new \Exception('block alloc error');
 			return null;
 		}
 
@@ -2949,10 +2951,10 @@ class QRcode {
 	//----------------------------------------------------------------------
 	public function encodeMask(QRinput $input, $mask) {
 		if ($input->getVersion() < 0 || $input->getVersion() > QRSPEC_VERSION_MAX) {
-			throw new Exception('wrong version');
+			throw new \Exception('wrong version');
 		}
 		if ($input->getErrorCorrectionLevel() > QR_ECLEVEL_H) {
-			throw new Exception('wrong level');
+			throw new \Exception('wrong level');
 		}
 
 		$raw = new QRrawcode($input);
@@ -3026,8 +3028,8 @@ class QRcode {
 
 	//----------------------------------------------------------------------
 	public function encodeString8bit($string, $version, $level) {
-		if (string == NULL) {
-			throw new Exception('empty string!');
+		if (empty($string)) {
+			throw new \Exception('empty string!');
 			return NULL;
 		}
 
@@ -3048,7 +3050,7 @@ class QRcode {
 	public function encodeString($string, $version, $level, $hint, $casesensitive) {
 
 		if ($hint != QR_MODE_8 && $hint != QR_MODE_KANJI) {
-			throw new Exception('bad hint');
+			throw new \Exception('bad hint');
 			return NULL;
 		}
 
@@ -3273,7 +3275,7 @@ class QRencode {
 			$maxSize = (int) (QR_PNG_MAXIMUM_SIZE / (count($tab) + 2 * $this->margin));
 
 			QRimage::png($tab, $outfile, min(max(1, $this->size), $maxSize), $this->margin, $saveandprint);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 
 			QRtools::log($outfile, $e->getMessage());
 		}
